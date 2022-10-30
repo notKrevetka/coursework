@@ -5,10 +5,13 @@
 {% endblock %}
 
 {% block body%}
-<div class="container">
-    <form role="form" action="/start.html" method="GET" style="margin-top: 15%; margin-left: 30%;">
-        
-        <input type="submit" class="btn btn-primary" value="Начать">
+<div class="container my-5 ">
+    <form role="form" action="/start.html" method="GET">
+        <div class="row">
+            <div class="col text-center">
+                <input class="btn btn-primary w-50" type="submit" value="Начать">
+            </div>
+        </div>
     </form>
 </div>
 {% endblock %}

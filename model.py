@@ -37,7 +37,7 @@ while True:
                 if cur_section > 0:
                     log(type='section', src=cur_section, dest=cur_section-1, time=time_sum)
                 cur_section = max(0, cur_section-1)
-            points = 0
+                points = 0
         elif user_answer == 'correct':
             if cur_section < 2:
                 log(type='section', src=cur_section, dest=cur_section+1, time=time_sum)
