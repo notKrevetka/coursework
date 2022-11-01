@@ -83,4 +83,4 @@ def show_question():
 
 if __name__ == '__main__':
     server_object.secret_key = 'abc'
-    server_object.run(debug=True)
+    server_object.run(debug=False)
