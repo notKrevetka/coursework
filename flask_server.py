@@ -55,7 +55,6 @@ def send_answer():
     print('#####', request.method)
     print('пришел ответ для вопроса из секции номер', session['cur_section'])
     answer = request.form['answer'] == "true"
-    print(session['is_trapped'], bool(answer), session['cur_section'])
     if session['is_trapped']:
         if time_current >= 32 or answer == False:
             type_action = 'stay_in_trap'
@@ -71,7 +70,7 @@ def send_answer():
             print('пошел в ловушку',  session['cur_section'], datetime.datetime.now(datetime.timezone.utc) - session['time_start'])
         elif answer == False:
             session['points'] -= 1
-            type_action = 'stay'
+            type_action = 'stay_with_wrong_answer'
             if session['points'] == -3:
                 if session['cur_section'] > 0:
                     type_action = 'down_section'
@@ -79,14 +78,12 @@ def send_answer():
                 session['cur_section'] = max(0, session['cur_section']-1)
                 session['points'] = 0
         elif answer == True:
-            type_action = 'stay'
+            type_action = 'stay_in_the_last_section'
             if session['cur_section'] < 2:
                 type_action = 'up_section'
                 print('up секции', session['cur_section'], "->", session['cur_section']+1, datetime.datetime.now(datetime.timezone.utc) - session['time_start'])
             session['cur_section'] = min(2, session['cur_section']+1)
             session['points'] = 0
-    print(session['is_trapped'], answer, session['cur_section'])
-
 
     destination_index = session['cur_section']
     current_action_info = db_logic.record_users_action(user,time_current, type_action, source_index, destination_index)
