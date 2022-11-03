@@ -36,8 +36,6 @@ def init_test():
 
 @server_object.route('/next_question.html', methods=['GET'])
 def show_question():
-    print('#####', request.method)
-    print('ЗАПРОС на вопрос из секции', session['cur_section'])
     if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or session['tasks'][session['cur_section']] == []:
         return render_template('index.html')
 
@@ -52,38 +50,40 @@ def show_question():
 @server_object.route('/send_answer', methods=['POST'])
 def send_answer():
     user, time_current, type_action, source_index, destination_index = session['user_name'], (datetime.datetime.now(datetime.timezone.utc) - session['time_last_q_started']).total_seconds(), None, session['cur_section'], None
-    print('#####', request.method)
-    print('пришел ответ для вопроса из секции номер', session['cur_section'])
     answer = request.form['answer'] == "true"
     if session['is_trapped']:
         if time_current >= 32 or answer == False:
             type_action = 'stay_in_trap'
         else:
             type_action = 'from_trap'
-            print('вышел из ловушки', session['cur_section'], datetime.datetime.now(
-                datetime.timezone.utc) - session['time_start'])
             session['is_trapped'] = False
     else:
         if (datetime.datetime.now(datetime.timezone.utc) - session['time_last_q_started']).total_seconds() >= 32:
             session['is_trapped'] = True
             type_action = 'to_trap'
-            print('пошел в ловушку',  session['cur_section'], datetime.datetime.now(datetime.timezone.utc) - session['time_start'])
         elif answer == False:
+            if session['points'] == 1:
+                session['points'] = 0
             session['points'] -= 1
+            print('очков сейчас', session['points'])
             type_action = 'stay_with_wrong_answer'
-            if session['points'] == -3:
+            if session['points'] == -2:
                 if session['cur_section'] > 0:
                     type_action = 'down_section'
-                    print('понижение секции', session['cur_section'], "->", session['cur_section'] - 1,  datetime.datetime.now(datetime.timezone.utc) - session['time_start'])
                 session['cur_section'] = max(0, session['cur_section']-1)
                 session['points'] = 0
         elif answer == True:
-            type_action = 'stay_in_the_last_section'
-            if session['cur_section'] < 2:
-                type_action = 'up_section'
-                print('up секции', session['cur_section'], "->", session['cur_section']+1, datetime.datetime.now(datetime.timezone.utc) - session['time_start'])
-            session['cur_section'] = min(2, session['cur_section']+1)
-            session['points'] = 0
+            if session['points'] == -1:
+                session['points'] = 0
+            session['points'] += 1
+            print('очков сейчас', session['points'])
+            type_action = 'stay_with_correct_answer'
+            if session['points'] == 2:
+                type_action = 'stay_in_the_last_section'
+                if session['cur_section'] < 2:
+                    type_action = 'up_section'
+                session['cur_section'] = min(2, session['cur_section']+1)
+                session['points'] = 0
 
     destination_index = session['cur_section']
     current_action_info = db_logic.record_users_action(user,time_current, type_action, source_index, destination_index)
