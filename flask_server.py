@@ -7,6 +7,7 @@ import uuid
 import datetime
 
 server_object = Flask(__name__)
+server_object.secret_key = 'abc'
 
 
 @server_object.route('/index.html', methods=['GET', 'POST'])
@@ -91,5 +92,4 @@ def send_answer():
 
 
 if __name__ == '__main__':
-    server_object.secret_key = 'abc'
     server_object.run(debug=True)
