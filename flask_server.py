@@ -15,6 +15,12 @@ def index():
     if request.method == 'GET':
         return render_template('index.html')
 
+@server_object.route('/veksler_start.html', methods=['GET', 'POST'])
+def veksler():
+    if request.method == 'GET':
+        return render_template('veksler.html')
+
+
 
 @server_object.route('/start.html', methods=['GET'])
 def init_test():
