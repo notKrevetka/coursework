@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request, make_response, session, redirect
-import db_logic
 import os
 import json
 import re
 import uuid
 import datetime
+
+from flask import Flask, render_template, request, make_response, session, redirect
+
+import db_logic
+from veksler_processor import process_veksler_form
 
 server_object = Flask(__name__)
 server_object.secret_key = 'abc'
@@ -15,11 +18,11 @@ def index():
     if request.method == 'GET':
         return render_template('index.html')
 
+
 @server_object.route('/veksler_start.html', methods=['GET', 'POST'])
 def veksler():
     if request.method == 'GET':
         return render_template('veksler.html')
-
 
 
 @server_object.route('/start.html', methods=['GET'])
@@ -34,7 +37,8 @@ def init_test():
         session['user_name'] = str(uuid.uuid1())
         session['tasks'] = get_json_q()
         session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
-        session['time_last_q_started'] = datetime.datetime.now(datetime.timezone.utc)
+        session['time_last_q_started'] = datetime.datetime.now(
+            datetime.timezone.utc)
         session['cur_section'] = 0
         session['is_trapped'] = False
 
@@ -56,7 +60,8 @@ def show_question():
 
 @server_object.route('/send_answer', methods=['POST'])
 def send_answer():
-    user, time_current, type_action, source_index, destination_index = session['user_name'], (datetime.datetime.now(datetime.timezone.utc) - session['time_last_q_started']).total_seconds(), None, session['cur_section'], None
+    user, time_current, type_action, source_index, destination_index = session['user_name'], (datetime.datetime.now(
+        datetime.timezone.utc) - session['time_last_q_started']).total_seconds(), None, session['cur_section'], None
     answer = request.form['answer'] == "true"
     if session['is_trapped']:
         if time_current >= 32 or answer == False:
@@ -93,8 +98,17 @@ def send_answer():
                 session['points'] = 0
 
     destination_index = session['cur_section']
-    current_action_info = db_logic.record_users_action(user,time_current, type_action, source_index, destination_index)
+    current_action_info = db_logic.record_users_action(
+        user, time_current, type_action, source_index, destination_index)
     return 'ok'
+
+
+@server_object.route('/veksler_result_processing', methods=['POST'])
+def veksler_result_processing():
+    print('##FOORM:', request.form)
+    score = process_veksler_form(request.form)
+    db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
+    return redirect('/start.html')
 
 
 if __name__ == '__main__':
