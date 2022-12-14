@@ -98,17 +98,22 @@ def send_answer():
                 session['points'] = 0
 
     destination_index = session['cur_section']
-    current_action_info = db_logic.record_users_action(
-        user, time_current, type_action, source_index, destination_index)
+    current_action_info = db_logic.record_users_action(user, time_current, type_action, source_index, destination_index)
     return 'ok'
 
 
 @server_object.route('/veksler_result_processing', methods=['POST'])
 def veksler_result_processing():
     print('##FOORM:', request.form)
-    score = process_veksler_form(request.form)
+    session['score'] = process_veksler_form(request.form)
+    score = session['score'] 
     db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
-    return redirect('/start.html')
+    return redirect('/show_veksler_results.html')
+
+@server_object.route('/show_veksler_results.html', methods=['GET'])
+def veksler_result_show():
+    session['score'] =  session['score'] 
+    return redirect('sow_veksler_results.html', score=score)
 
 
 if __name__ == '__main__':
