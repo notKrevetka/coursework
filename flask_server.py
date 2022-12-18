@@ -108,7 +108,7 @@ def veksler_result_processing():
     session['score'] = process_veksler_form(request.form)
     score = session['score'] 
     db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
-    return render_template('show_veksler_results.html', score=score)
+    return render_template('/show_veksler_results.html', score=score)
 
 
 if __name__ == '__main__':

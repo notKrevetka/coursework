@@ -17,6 +17,31 @@
         margin-bottom: 50px !important;
     }
 </style>
+<script>
+    // Set the date we're counting down to
+
+    var countDownDate = Math.floor(new Date().getTime() / 1000) + 5
+    console.log(countDownDate)
+
+    var x = setInterval(function () {
+        var now = Math.floor(new Date().getTime() / 1000);
+
+        var distance = countDownDate - now;
+        if (distance == 0){
+            document.querySelector("body > form > div > div > div > input").click()
+        }
+        var minutes = Math.floor(distance / 60);
+        var seconds = distance % 60;
+        // Display the result in the element with id="demo"
+        document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+
+        // If the count down is finished, write some text
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("timer").innerHTML = "EXPIRED";
+        }
+    }, 1000);
+</script>
 {% endblock %}
 
 
@@ -24,7 +49,8 @@
 {% block body%}
 
 <div id="topNavLine">
-    <h3 class="text-white m-2">Время до окончания: <h3>
+    <h3 class="text-white m-2">Время до окончания: <div id="timer"></div>
+        <h3>
 </div>
 <p class="marg-top">Начало</p>
 
