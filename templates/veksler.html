@@ -20,7 +20,7 @@
 <script>
     // Set the date we're counting down to
 
-    var countDownDate = Math.floor(new Date().getTime() / 1000) + 5
+    var countDownDate = Math.floor(new Date().getTime() / 1000) + 15 * 60
     console.log(countDownDate)
 
     var x = setInterval(function () {
@@ -32,10 +32,8 @@
         }
         var minutes = Math.floor(distance / 60);
         var seconds = distance % 60;
-        // Display the result in the element with id="demo"
         document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
 
-        // If the count down is finished, write some text
         if (distance < 0) {
             clearInterval(x);
             document.getElementById("timer").innerHTML = "EXPIRED";
@@ -49,9 +47,20 @@
 {% block body%}
 
 <div id="topNavLine">
-    <h3 class="text-white m-2">Время до окончания: <div id="timer"></div>
-        <h3>
+
+    <div class="container text-white m-2">
+        
+        <div class="row">
+            <div class="col-md-auto">
+                <h3>Время до окончания: </h3>
+              </div>
+          <div class="col">
+            <h3><div id="timer"></div></h3>
+          </div>
+        </div>
+      </div>
 </div>
+
 <p class="marg-top">Начало</p>
 
 <form role="form" action="/veksler_result_processing" method="POST">
