@@ -16,6 +16,14 @@ server_object.secret_key = 'abc'
 @server_object.route('/index.html', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
+        session['points'] = 0
+        session['user_name'] = str(uuid.uuid1())
+        session['tasks'] = get_json_q()
+        session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
+        session['time_last_q_started'] = datetime.datetime.now(
+            datetime.timezone.utc)
+        session['cur_section'] = 0
+        session['is_trapped'] = False
         return render_template('index.html')
 
 
@@ -33,15 +41,6 @@ def init_test():
         return q_base
 
     if request.method == 'GET':
-        session['points'] = 0
-        session['user_name'] = str(uuid.uuid1())
-        session['tasks'] = get_json_q()
-        session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
-        session['time_last_q_started'] = datetime.datetime.now(
-            datetime.timezone.utc)
-        session['cur_section'] = 0
-        session['is_trapped'] = False
-
         return redirect('/next_question.html')
 
 
