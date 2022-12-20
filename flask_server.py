@@ -15,6 +15,11 @@ server_object.secret_key = 'abc'
 
 @server_object.route('/index.html', methods=['GET', 'POST'])
 def index():
+    def get_json_q():
+        with open('questioons_base.json') as f:
+            q_base = json.load(f)
+        return q_base
+        
     if request.method == 'GET':
         session['points'] = 0
         session['user_name'] = str(uuid.uuid1())
@@ -35,10 +40,7 @@ def veksler():
 
 @server_object.route('/start.html', methods=['GET'])
 def init_test():
-    def get_json_q():
-        with open('questioons_base.json') as f:
-            q_base = json.load(f)
-        return q_base
+    
 
     if request.method == 'GET':
         return redirect('/next_question.html')
