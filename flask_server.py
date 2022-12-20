@@ -10,7 +10,7 @@ import db_logic
 from veksler_processor import process_veksler_form
 
 server_object = Flask(__name__)
-server_object.secret_key = 'abc'
+server_object.secret_key = b'abc'
 
 
 @server_object.route('/index.html', methods=['GET', 'POST'])
