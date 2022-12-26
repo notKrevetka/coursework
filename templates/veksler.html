@@ -18,14 +18,12 @@
     }
 </style>
 <script>
-    // Set the date we're counting down to
-
+    // var countDownDate = Math.floor(new Date().getTime() / 1000) + 2
     var countDownDate = Math.floor(new Date().getTime() / 1000) + 15 * 60
     console.log(countDownDate)
 
     var x = setInterval(function () {
         var now = Math.floor(new Date().getTime() / 1000);
-
         var distance = countDownDate - now;
         if (distance == 0){
             document.querySelector("body > form > div > div > div > input").click()
@@ -83,7 +81,7 @@
                 </td>
                 <td align="center">
                     <b>
-                        <font color="">Продавец на рынке продает шапку. Стоит 10 рубдей Подходит покупатель, меряет и
+                        <font color="">Продавец на рынке продает шапку. Стоит 10 руб. Подходит покупатель, меряет и
                             согласен взять. Но у него есть только 25 руб. Продавец отсылает мальчика с этими 25 руб. к
                             соседке разменять. Мальчик прибегает и отдает 10+10+5 руб. Продавец отдает шапку и сдачу в
                             15 руб, а 10 руб. оставляет себе. Через некоторое время приходит соседка и говорит, что 25

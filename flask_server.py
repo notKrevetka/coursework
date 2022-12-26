@@ -15,41 +15,42 @@ server_object.secret_key = b'abc'
 
 @server_object.route('/index.html', methods=['GET', 'POST'])
 def index():
+    
+    return render_template('index.html')
+
+
+@server_object.route('/veksler_start.html', methods=['GET', 'POST'])
+def veksler():
+    session['user_name'] = str(uuid.uuid1())
+    if request.method == 'GET':
+        
+        return render_template('veksler.html')
+
+
+@server_object.route('/start.html', methods=['GET'])
+def init_test():
     def get_json_q():
         with open('questioons_base.json') as f:
             q_base = json.load(f)
         return q_base
-        
+
     if request.method == 'GET':
         session['points'] = 0
-        session['user_name'] = str(uuid.uuid1())
+        session['user_name'] = session['user_name']
         session['tasks'] = get_json_q()
         session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
         session['time_last_q_started'] = datetime.datetime.now(
             datetime.timezone.utc)
         session['cur_section'] = 0
         session['is_trapped'] = False
-        return render_template('index.html')
-
-
-@server_object.route('/veksler_start.html', methods=['GET', 'POST'])
-def veksler():
-    if request.method == 'GET':
-        return render_template('veksler.html')
-
-
-@server_object.route('/start.html', methods=['GET'])
-def init_test():
-    
-
-    if request.method == 'GET':
         return redirect('/next_question.html')
 
 
 @server_object.route('/next_question.html', methods=['GET'])
 def show_question():
+    # if (session['time_last_q_started'] - session['time_start']).total_seconds() > 3 or session['tasks'][session['cur_section']] == []:
     if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or session['tasks'][session['cur_section']] == []:
-        return render_template('index.html')
+        return redirect('/ending.html')
 
     question = session['tasks'][session['cur_section']].pop(0)
     print('Выдергнут вопрос:', question)
@@ -111,6 +112,9 @@ def veksler_result_processing():
     db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
     return render_template('/show_veksler_results.html', score=score)
 
+@server_object.route('/ending.html', methods=['GET', 'POST'])
+def final_page():
+    return render_template('/ending.html')
 
 if __name__ == '__main__':
     server_object.run(debug=True)
