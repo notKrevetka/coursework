@@ -12,19 +12,11 @@ from veksler_processor import process_veksler_form
 server_object = Flask(__name__)
 server_object.secret_key = b'abc'
 
-
+@server_object.route('/', methods=['GET', 'POST'])
 @server_object.route('/index.html', methods=['GET', 'POST'])
 def index():
     
     return render_template('index.html')
-
-
-@server_object.route('/veksler_start.html', methods=['GET', 'POST'])
-def veksler():
-    session['user_name'] = str(uuid.uuid1())
-    if request.method == 'GET':
-        
-        return render_template('veksler.html')
 
 
 @server_object.route('/start.html', methods=['GET'])
@@ -43,23 +35,6 @@ def init_test():
             datetime.timezone.utc)
         session['cur_section'] = 0
         session['is_trapped'] = False
-<<<<<<< HEAD
-=======
-        return render_template('show_veksler_results.html')
-
-
-@server_object.route('/veksler_start.html', methods=['GET', 'POST'])
-def veksler():
-    if request.method == 'GET':
-        return render_template('veksler.html')
-
-
-@server_object.route('/start.html', methods=['GET'])
-def init_test():
-    
-
-    if request.method == 'GET':
->>>>>>> f9a3157 (final fix?)
         return redirect('/next_question.html')
 
 
@@ -121,13 +96,13 @@ def send_answer():
     return 'ok'
 
 
-@server_object.route('/veksler_result_processing', methods=['POST'])
-def veksler_result_processing():
-    print('##FOORM:', request.form)
-    session['score'] = process_veksler_form(request.form)
-    score = session['score'] 
-    db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
-    return render_template('/show_veksler_results.html', score=score)
+# @server_object.route('/veksler_result_processing', methods=['POST'])
+# def veksler_result_processing():
+#     print('##FOORM:', request.form)
+#     session['score'] = process_veksler_form(request.form)
+#     score = session['score'] 
+#     db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
+#     return render_template('/show_veksler_results.html', score=score)
 
 @server_object.route('/ending.html', methods=['GET', 'POST'])
 def final_page():
