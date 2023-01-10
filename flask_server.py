@@ -43,6 +43,23 @@ def init_test():
             datetime.timezone.utc)
         session['cur_section'] = 0
         session['is_trapped'] = False
+<<<<<<< HEAD
+=======
+        return render_template('show_veksler_results.html')
+
+
+@server_object.route('/veksler_start.html', methods=['GET', 'POST'])
+def veksler():
+    if request.method == 'GET':
+        return render_template('veksler.html')
+
+
+@server_object.route('/start.html', methods=['GET'])
+def init_test():
+    
+
+    if request.method == 'GET':
+>>>>>>> f9a3157 (final fix?)
         return redirect('/next_question.html')
 
 
