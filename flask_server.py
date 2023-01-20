@@ -28,7 +28,7 @@ def init_test():
 
     if request.method == 'GET':
         session['points'] = 0
-        session['user_name'] = session['user_name']
+        session['user_name'] = str(uuid.uuid1())
         session['tasks'] = get_json_q()
         session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
         session['time_last_q_started'] = datetime.datetime.now(
