@@ -58,7 +58,8 @@
     "question_img": "A12.jpg",
     "col_answers": 6,
     "rigth_answ": "2"
-  },
+  }
+],[
   {
     "question_img": "B1.jpg",
     "col_answers": 6,
@@ -179,7 +180,8 @@
     "question_img": "C12.jpg",
     "col_answers": 8,
     "rigth_answ": "2"
-  },
+  }
+],[
   {
     "question_img": "D1.jpg",
     "col_answers": 8,

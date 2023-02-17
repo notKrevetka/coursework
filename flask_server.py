@@ -7,7 +7,6 @@ import datetime
 from flask import Flask, render_template, request, make_response, session, redirect
 
 import db_logic
-from veksler_processor import process_veksler_form
 
 server_object = Flask(__name__)
 server_object.secret_key = b'abc'
@@ -31,8 +30,7 @@ def init_test():
         session['user_name'] = str(uuid.uuid1())
         session['tasks'] = get_json_q()
         session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
-        session['time_last_q_started'] = datetime.datetime.now(
-            datetime.timezone.utc)
+        session['time_last_q_started'] = datetime.datetime.now(datetime.timezone.utc)
         session['cur_section'] = 0
         session['is_trapped'] = False
         return redirect('/next_question.html')
@@ -41,7 +39,7 @@ def init_test():
 @server_object.route('/next_question.html', methods=['GET'])
 def show_question():
     # if (session['time_last_q_started'] - session['time_start']).total_seconds() > 3 or session['tasks'][session['cur_section']] == []:
-    if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or session['tasks'][session['cur_section']] == []:
+    if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or session['tasks'][session['cur_section']%5] == []:
         return redirect('/ending.html')
 
     question = session['tasks'][session['cur_section']].pop(0)
@@ -58,51 +56,42 @@ def send_answer():
         datetime.timezone.utc) - session['time_last_q_started']).total_seconds(), None, session['cur_section'], None
     answer = request.form['answer'] == "true"
     if session['is_trapped']:
-        if time_current >= 32 or answer == False:
-            type_action = 'stay_in_trap'
+        if time_current >= 31 or answer == False:
+            type_action = 'in_trap'
         else:
             type_action = 'from_trap'
+            session['cur_section'] -= 5
             session['is_trapped'] = False
     else:
-        if (datetime.datetime.now(datetime.timezone.utc) - session['time_last_q_started']).total_seconds() >= 32:
+        if (datetime.datetime.now(datetime.timezone.utc) - session['time_last_q_started']).total_seconds() >= 31:
             session['is_trapped'] = True
+            session['cur_section'] += 5
             type_action = 'to_trap'
+
         elif answer == False:
             if session['points'] == 1:
                 session['points'] = 0
             session['points'] -= 1
-            print('очков сейчас', session['points'])
-            type_action = 'stay_with_wrong_answer'
-            if session['points'] == -2:
-                if session['cur_section'] > 0:
-                    type_action = 'down_section'
-                session['cur_section'] = max(0, session['cur_section']-1)
-                session['points'] = 0
+            type_action = 'wrong_answer'
+
+
+
         elif answer == True:
-            if session['points'] == -1:
+            if session['points'] < 0:
                 session['points'] = 0
             session['points'] += 1
-            print('очков сейчас', session['points'])
-            type_action = 'stay_with_correct_answer'
+            # print('очков сейчас', session['points'])
+            type_action = 'correct_answer'
             if session['points'] == 2:
-                type_action = 'stay_in_the_last_section'
-                if session['cur_section'] < 2:
+                type_action = 'correct_answer'
+                if session['cur_section'] < 4:
                     type_action = 'up_section'
-                session['cur_section'] = min(2, session['cur_section']+1)
+                session['cur_section'] = min(4, session['cur_section']+1)
                 session['points'] = 0
 
     destination_index = session['cur_section']
     current_action_info = db_logic.record_users_action(user, time_current, type_action, source_index, destination_index)
     return 'ok'
-
-
-# @server_object.route('/veksler_result_processing', methods=['POST'])
-# def veksler_result_processing():
-#     print('##FOORM:', request.form)
-#     session['score'] = process_veksler_form(request.form)
-#     score = session['score'] 
-#     db_logic.set_user_level(session['user_name'], 1 if score <= 7 else 2 if score <= 14 else 3)
-#     return render_template('/show_veksler_results.html', score=score)
 
 @server_object.route('/ending.html', methods=['GET', 'POST'])
 def final_page():
