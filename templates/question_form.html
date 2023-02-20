@@ -7,7 +7,7 @@
 {% block body%}
 <div class="card p-1 bg-none border-0">
     <div class="container">
-        <h2>Текущий уровень сложности: {{session['cur_section']+1}}</h2>
+        <h2>Текущий уровень сложности: {{(session['cur_section']%5)+1}}</h2>
         <div class="col-12 my-3">
             <img class="mx-auto d-block m-2 rounded" src="/static/images/images/{{question['question_img']}}">
             <div class="col text-center">

@@ -38,22 +38,22 @@ def croop_and_count(file_path):
 
 
 if __name__ == '__main__':
-    files = os.listdir('images/')
+    files = os.listdir('images_source-2/')
     files.sort()
     l1 = [] 
     l2 = []
     l3 = []
     d = {}
     c = 0
-    for file in files:
-        question_img, col_answers, rigth_answ = file, croop_and_count('images/' + file), "right"
+    for c, file in enumerate(files):
+        question_img, col_answers, rigth_answ = file, croop_and_count('images_source-2/' + file), "right"
         print(c)
         if c < 24:
-            d = {'question_img' : question_img }
-            d ['col_answers'] = col_answers
-            d ['rigth_answ'] = rigth_answ
-            l1.append(d)
-            c+=1
+            d = {
+                'question_img' : question_img,
+                'col_answers' : croop_and_count('images_source-2/' + file),
+                'rigth_answ' : "right"
+            }
  
         if c >= 24 and c <50:
             d = {'question_img' : question_img }

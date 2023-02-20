@@ -18,16 +18,16 @@ def index():
     return render_template('index.html')
 
 
-@server_object.route('/start.html', methods=['GET'])
+@server_object.route('/start.html', methods=['POST'])
 def init_test():
     def get_json_q():
         with open('questioons_base.json') as f:
             q_base = json.load(f)
         return q_base
 
-    if request.method == 'GET':
+    if request.method == 'POST':
         session['points'] = 0
-        session['user_name'] = str(uuid.uuid1())
+        session['user_name'] = request.form['surname'] + str(uuid.uuid4())
         session['tasks'] = get_json_q()
         session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
         session['time_last_q_started'] = datetime.datetime.now(datetime.timezone.utc)
@@ -38,11 +38,10 @@ def init_test():
 
 @server_object.route('/next_question.html', methods=['GET'])
 def show_question():
-    # if (session['time_last_q_started'] - session['time_start']).total_seconds() > 3 or session['tasks'][session['cur_section']] == []:
     if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or session['tasks'][session['cur_section']%5] == []:
         return redirect('/ending.html')
 
-    question = session['tasks'][session['cur_section']].pop(0)
+    question = session['tasks'][session['cur_section']%5].pop(0)
     print('Выдергнут вопрос:', question)
 
     session['time_last_q_started'] = datetime.datetime.now(
