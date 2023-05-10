@@ -10,6 +10,7 @@ tests_results = Table(
     'tests_results', meta,
     Column('counter', Integer, primary_key=True),
     Column('user', String),
+    Column('age', Integer),
     Column('time_current', Integer),
     Column('type_action', String),
     Column('source_index', Integer),
@@ -25,9 +26,9 @@ user_levels = Table(
 )
 meta.create_all(engine)
 
-def record_users_action(user,time_current, type_action, source_index, destination_index):
+def record_users_action(user, age, time_current, type_action, source_index, destination_index):
     with engine.connect() as conn:
-        stmt1 = tests_results.insert().values(user=user, time_current=time_current, type_action=type_action, source_index=source_index, destination_index=destination_index)
+        stmt1 = tests_results.insert().values(user=user, age=age, time_current=time_current, type_action=type_action, source_index=source_index, destination_index=destination_index)
         conn.execute(stmt1)
 
 def set_user_level(user, level):

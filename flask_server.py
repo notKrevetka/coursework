@@ -3,6 +3,9 @@ import json
 import re
 import uuid
 import datetime
+import sys
+import random
+sys.stdout.flush()
 
 from flask import Flask, render_template, request, make_response, session, redirect
 
@@ -21,13 +24,19 @@ def index():
 @server_object.route('/start.html', methods=['POST'])
 def init_test():
     def get_json_q():
+        qs = dict()
         with open('questioons_base.json') as f:
             q_base = json.load(f)
-        return q_base
+            for i in range(5):
+                qs[i] = list(filter(lambda x: x['question_img'].startswith(f'state{i+1}'), q_base))
+                random.shuffle(qs[i])
+        print(qs, flush=True)
+        return qs
 
     if request.method == 'POST':
         session['points'] = 0
         session['user_name'] = request.form['surname'] + str(uuid.uuid4())
+        session['age'] = request.form['age']
         session['tasks'] = get_json_q()
         session['time_start'] = datetime.datetime.now(datetime.timezone.utc)
         session['time_last_q_started'] = datetime.datetime.now(datetime.timezone.utc)
@@ -36,12 +45,17 @@ def init_test():
         return redirect('/next_question.html')
 
 
-@server_object.route('/next_question.html', methods=['GET'])
+@server_object.route('/next_question.html', methods=['GET', 'POST'])
 def show_question():
-    if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or session['tasks'][session['cur_section']%5] == []:
+    if (session['time_last_q_started'] - session['time_start']).total_seconds() > 15*60 or \
+        len(session['tasks'][str(session['cur_section']%5)]) == 0:
         return redirect('/ending.html')
-
-    question = session['tasks'][session['cur_section']%5].pop(0)
+# 1 состояние - рандомно из images a-b + images-3 a-b
+# 2 состояние - рандомно из images с + images-3 с
+# 3 состояние - рандомно из images-2 
+# 4 состояние - рандомно из images d + images-3 d
+# 5 состоние - рандомно из images e + images-3 e
+    question = session['tasks'][str(session['cur_section']%5)].pop(0)
     print('Выдергнут вопрос:', question)
 
     session['time_last_q_started'] = datetime.datetime.now(
@@ -72,9 +86,7 @@ def send_answer():
                 session['points'] = 0
             session['points'] -= 1
             type_action = 'wrong_answer'
-
-
-
+            
         elif answer == True:
             if session['points'] < 0:
                 session['points'] = 0
@@ -89,7 +101,7 @@ def send_answer():
                 session['points'] = 0
 
     destination_index = session['cur_section']
-    current_action_info = db_logic.record_users_action(user, time_current, type_action, source_index, destination_index)
+    current_action_info = db_logic.record_users_action(user, session['age'], time_current, type_action, source_index, destination_index)
     return 'ok'
 
 @server_object.route('/ending.html', methods=['GET', 'POST'])

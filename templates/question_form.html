@@ -9,7 +9,7 @@
     <div class="container">
         <h2>Текущий уровень сложности: {{(session['cur_section']%5)+1}}</h2>
         <div class="col-12 my-3">
-            <img class="mx-auto d-block m-2 rounded" src="/static/images/images/{{question['question_img']}}">
+            <img class="mx-auto d-block m-2 rounded" src="/static/images/{{question['question_img']}}">
             <div class="col text-center">
                 {%for i in range(1,question['col_answers']+1): %}
                 <button onclick="send_answer({{i}} == {{question['rigth_answ']}})"
