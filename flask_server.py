@@ -28,7 +28,7 @@ def init_test():
         with open('questioons_base.json') as f:
             q_base = json.load(f)
             for i in range(5):
-                qs[i] = list(filter(lambda x: x['question_img'].startswith(f'state{i+1}'), q_base))
+                qs[i] = list(filter(lambda x: x['question_img'].startswith(f'state{i+1}'), q_base))[:8]
                 random.shuffle(qs[i])
         print(qs, flush=True)
         return qs
